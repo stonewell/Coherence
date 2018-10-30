@@ -143,7 +143,7 @@ class AxisCamStore(BackendStore):
         return str(self.__class__).split('.')[-1]
 
     def append(self, obj, parent):
-        if isinstance(obj, basestring):
+        if isinstance(obj, str):
             mimetype = 'directory'
         else:
             protocol, network, content_type, info = obj['protocol'].split(':')
@@ -176,7 +176,7 @@ class AxisCamStore(BackendStore):
         return len(self.store)
 
     def get_by_id(self, id):
-        if isinstance(id, basestring):
+        if isinstance(id, str):
             id = id.split('@', 1)
             id = id[0]
         id = int(id)
@@ -198,7 +198,7 @@ class AxisCamStore(BackendStore):
 
         source_protocols = Set()
 
-        for k, v in self.config.items():
+        for k, v in list(self.config.items()):
             if isinstance(v, dict):
                 v['name'] = k
                 source_protocols.add(v['protocol'])
@@ -215,7 +215,7 @@ def main():
     f = AxisCamStore(None)
 
     def got_upnp_result(result):
-        print "upnp", result
+        print("upnp", result)
 
     #f.upnp_init()
     #print f.store

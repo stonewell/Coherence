@@ -5,7 +5,7 @@
 # Copyright 2008-2010, Frank Scholz <dev@coherence-project.org>
 
 import os.path
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from twisted.python import failure
 
@@ -20,7 +20,7 @@ from coherence.extern.simple_plugin import Plugin
 
 from coherence import log
 
-from CoherenceDBEntryType import CoherenceDBEntryType
+from .CoherenceDBEntryType import CoherenceDBEntryType
 
 TRACK_COUNT = 1000000
 
@@ -119,7 +119,7 @@ class RhythmboxPlayer(log.Loggable):
 
             location = self.shell.props.db.entry_get(entry, rhythmdb.PROP_LOCATION)
             if location.startswith("file://"):
-                location = unicode(urllib.unquote(location[len("file://"):]))
+                location = str(urllib.parse.unquote(location[len("file://"):]))
 
             uri = ''.join((self.server.coherence.urlbase + str(self.dmr_uuid)[5:] + '/' + str(int(id) + TRACK_COUNT)))
 

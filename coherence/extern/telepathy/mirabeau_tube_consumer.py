@@ -33,7 +33,7 @@ class MirabeauTubeConsumerMixin(tube.TubeConsumerMixin):
             except KeyError:
                 self.debug("Group %r not in roster...", group)
                 continue
-            for contact_handle, contact in contacts.iteritems():
+            for contact_handle, contact in contacts.items():
                 if contact[CONNECTION + "/contact-id"] == initiator:
                     return True
         return False
@@ -79,7 +79,7 @@ class MirabeauTubeConsumerMixin(tube.TubeConsumerMixin):
                 except KeyError:
                     self.debug("tube with handle %d not registered", handle)
                 else:
-                    for service_iface_name, channel in tube_channels.iteritems():
+                    for service_iface_name, channel in tube_channels.items():
                         channel[CHANNEL_INTERFACE].Close()
                     del self._coherence_tubes[handle]
 
@@ -111,7 +111,7 @@ class MirabeauTubeConsumerMixin(tube.TubeConsumerMixin):
             self.got_devices_callback(devices)
 
         def got_error(exception):
-            print ">>>", exception
+            print(">>>", exception)
 
         pontoon = pontoon_tube.get_object(initiator_bus_name, OBJECT_PATH)
         pontoon.get_devices_async(1, reply_handler=got_devices,

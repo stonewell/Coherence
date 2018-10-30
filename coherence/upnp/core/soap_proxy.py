@@ -48,7 +48,7 @@ class SOAPProxy(log.Loggable):
 
         headers = {'content-type': 'text/xml ;charset="utf-8"',
                     'SOAPACTION': '"%s"' % soapaction, }
-        if arguments.has_key('headers'):
+        if 'headers' in arguments:
             headers.update(arguments['headers'])
             del arguments['headers']
 
@@ -83,7 +83,7 @@ class SOAPProxy(log.Loggable):
 
         def print_c(e):
             for c in e.getchildren():
-                print c, c.tag
+                print(c, c.tag)
                 print_c(c)
 
         self.debug("result: %r", page)

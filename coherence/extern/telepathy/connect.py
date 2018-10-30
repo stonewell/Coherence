@@ -13,7 +13,7 @@ from twisted.internet import defer
 
 
 def to_dbus_account(account):
-    for key, value in account.iteritems():
+    for key, value in account.items():
         if value.lower() in ("false", "true"):
             value = bool(value)
         else:
@@ -41,7 +41,7 @@ def tp_connect(manager, protocol, account, ready_handler=None):
         dfr = defer.succeed(client_connection)
     else:
         presence = dbus.Struct((dbus.UInt32(CONNECTION_PRESENCE_TYPE_AVAILABLE),
-                                dbus.String(u'available'), dbus.String(u'')),
+                                dbus.String('available'), dbus.String('')),
                                signature=None, variant_level=1)
 
         dfr = defer.Deferred()

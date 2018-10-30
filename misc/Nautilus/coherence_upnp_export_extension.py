@@ -53,19 +53,19 @@ def do_export(name, directories):
 
 try:
     import nautilus
-    from urllib import unquote
+    from urllib.parse import unquote
 
 
     class CoherenceExportExtension(nautilus.MenuProvider):
 
         def __init__(self):
-            print "CoherenceExportExtension", os.getpid()
+            print("CoherenceExportExtension", os.getpid())
             try:
                 from coherence.ui.av_widgets import DeviceExportWidget
                 self.ui = DeviceExportWidget(standalone=False)
                 self.ui_create()
             except:
-                print "can't setup Coherence connection"
+                print("can't setup Coherence connection")
                 self.ui = None
 
         def ui_destroy(self, *args):

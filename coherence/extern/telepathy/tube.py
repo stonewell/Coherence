@@ -22,7 +22,7 @@ class TubePublisherMixin(object):
         params = {CHANNEL_INTERFACE + ".ChannelType": CHANNEL_TYPE_DBUS_TUBE,
                   CHANNEL_INTERFACE + ".TargetHandleType": CONNECTION_HANDLE_TYPE_ROOM,
                   CHANNEL_INTERFACE + ".TargetID": self.muc_id}
-        for interface in self._tubes_to_offer.keys():
+        for interface in list(self._tubes_to_offer.keys()):
             params[CHANNEL_TYPE_DBUS_TUBE + ".ServiceName"] = interface
             conn_iface.CreateChannel(params)
 
@@ -48,7 +48,7 @@ class TubePublisherMixin(object):
         self.info("local tube address: %r", address)
 
     def close_tubes(self):
-        for object_path, channel in self._tubes.iteritems():
+        for object_path, channel in self._tubes.items():
             channel.Close()
 
 

@@ -37,7 +37,7 @@ class ConfigList(list, ConfigMixin):
             if n.get('active', 'yes') == 'yes':
                 if len(n) == 0:
                     a = {}
-                    for attr, value in n.items():
+                    for attr, value in list(n.items()):
                         if attr == 'active':
                             continue
                         a[attr] = value
@@ -56,7 +56,7 @@ class ConfigDict(dict, ConfigMixin):
 
     def to_element(self):
         root = ET.Element(self.name)
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if isinstance(value, (dict, list)):
                 root.append(value.to_element())
             else:
@@ -64,7 +64,7 @@ class ConfigDict(dict, ConfigMixin):
         return root
 
     def from_element(self, node):
-        for attr, value in node.items():
+        for attr, value in list(node.items()):
             if attr == 'active':
                 continue
             self[attr] = value
@@ -74,7 +74,7 @@ class ConfigDict(dict, ConfigMixin):
                 if len(n) == 0:
                     if n.text is not None and len(n.text) > 0:
                         self[n.get('name', n.tag)] = n.text
-                    for attr, value in n.items():
+                    for attr, value in list(n.items()):
                         if attr == 'active':
                             continue
                         self[attr] = value
@@ -140,7 +140,7 @@ class Config(ConfigDict):
             xml = ET.parse(file)
         except (SyntaxError, IOError):
             raise
-        except Exception, msg:
+        except Exception as msg:
             raise SyntaxError(msg)
 
         xmlroot = xml.getroot()
@@ -151,7 +151,7 @@ class Config(ConfigDict):
         if file == None:
             file = self.file
         e = ET.Element(self.name)
-        for key, value in self.items():
+        for key, value in list(self.items()):
             if isinstance(value, (dict, list)):
                 e.append(value.to_element())
             else:
@@ -166,11 +166,11 @@ if __name__ == '__main__':
     import sys
 
     config = Config(sys.argv[1])
-    print config
+    print(config)
     config['serverport'] = 55555
     config['test'] = 'test'
     config['logging']['level'] = 'info'
     del config['controlpoint']
     #del config['logging']['level']
-    print config
+    print(config)
     config.save('/tmp/t')

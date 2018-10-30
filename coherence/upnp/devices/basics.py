@@ -34,7 +34,7 @@ class DeviceHttpRoot(resource.Resource, log.Loggable):
         self.info('DeviceHttpRoot %s getChildWithDefault %s %s %s',
                   self.server.device_type, path, request.uri, request.client)
         self.info(request.getAllHeaders())
-        if self.children.has_key(path):
+        if path in self.children:
             return self.children[path]
         if request.uri == '/':
             return self
@@ -101,7 +101,7 @@ class RootDeviceXML(static.Data):
             textElement(d, 'X_DLNADOC', DEVICE_NS, 'M-DMR-1.50')
 
         if len(dlna_caps) > 0:
-            if isinstance(dlna_caps, basestring):
+            if isinstance(dlna_caps, str):
                 dlna_caps = [dlna_caps]
             for cap in dlna_caps:
                 textElement(d, 'X_DLNACAP', DEVICE_NS, cap)
@@ -151,7 +151,7 @@ class RootDeviceXML(static.Data):
             for icon in icons:
 
                 icon_path = ''
-                if icon.has_key('url'):
+                if 'url' in icon:
                     if icon['url'].startswith('file://'):
                         icon_path = icon['url'][7:]
                     elif icon['url'] == '.face':
@@ -162,7 +162,7 @@ class RootDeviceXML(static.Data):
 
                 if os.path.exists(icon_path) == True:
                     i = ET.SubElement(e, 'icon')
-                    for k, v in icon.items():
+                    for k, v in list(icon.items()):
                         if k == 'url':
                             if v.startswith('file://'):
                                 textElement(i, k, None, '/' + uuid[5:] + '/' + os.path.basename(v))
@@ -205,7 +205,7 @@ class BasicDeviceMixin(object):
         kwargs['urlbase'] = self.urlbase
         self.icons = kwargs.get('iconlist', kwargs.get('icons', []))
         if len(self.icons) == 0:
-            if kwargs.has_key('icon'):
+            if 'icon' in kwargs:
                 if isinstance(kwargs['icon'], dict):
                     self.icons.append(kwargs['icon'])
                 else:
@@ -373,7 +373,7 @@ class BasicDevice(log.Loggable, BasicDeviceMixin):
         for attrname, cls in self._service_definition:
             try:
                 service = cls(self)
-            except LookupError, msg:
+            except LookupError as msg:
                 self.warning('%s %s', cls.__name__, msg)
                 raise LookupError(msg)
             self._services.append(service)
@@ -413,7 +413,7 @@ class BasicDevice(log.Loggable, BasicDeviceMixin):
             self.web_resource.putChild(service.id, service)
 
         for icon in self.icons:
-            if not icon.has_key('url'):
+            if 'url' not in icon:
                 continue
             if icon['url'].startswith('file://'):
                 name = os.path.basename(icon['url'])

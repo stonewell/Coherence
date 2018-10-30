@@ -50,13 +50,13 @@ def new_encode_entity(text, pattern=utf8_escape):
             if t is None:
                 t = "&#%d;" % ord(char)
             append(t)
-        if type(text) == unicode:
+        if type(text) == str:
             return ''.join(out)
         else:
-            return u''.encode('utf-8').join(out)
+            return ''.encode('utf-8').join(out)
 
     try:
-        if type(text) == unicode:
+        if type(text) == str:
             return elementtree.ElementTree._encode(
                 escape.sub(escape_entities, text), 'ascii')
         else:
@@ -81,7 +81,7 @@ if not hasattr(ET, 'XMLParser'):
 
 
 def namespace_map_update(namespaces):
-    for uri, prefix in namespaces.items():
+    for uri, prefix in list(namespaces.items()):
         elementtree.ElementTree.register_namespace(prefix, uri)
 
 
@@ -129,9 +129,9 @@ def parse_xml(data, encoding="utf-8", dump_invalid_data=False):
     data = data.replace('\x00', '')
     try:
         parser.feed(data)
-    except Exception, error:
+    except Exception as error:
         if dump_invalid_data:
-            print error, repr(data)
+            print(error, repr(data))
         parser.close()
         raise
     else:
@@ -152,6 +152,6 @@ def textElementIfNotNone(parent, tag, namespace, text):
     """If text is not none, create a subelement with text content."""
     if text is None:
         return
-    if not isinstance(text, basestring):
-        text = unicode(text)
+    if not isinstance(text, str):
+        text = str(text)
     return textElement(parent, tag, namespace, text)

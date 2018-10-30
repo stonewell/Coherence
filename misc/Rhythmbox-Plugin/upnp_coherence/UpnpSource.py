@@ -46,7 +46,7 @@ class UpnpSource(rb.BrowserSource, log.Loggable):
 
     def do_selected (self):
         if not self.__activated:
-            print "activating upnp source"
+            print("activating upnp source")
             self.__activated = True
 
             shell = self.get_property('shell')

@@ -8,7 +8,7 @@
 import os.path
 import rhythmdb
 import coherence.extern.louie as louie
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from coherence.upnp.core import DIDLLite
 
@@ -100,9 +100,9 @@ class Playlist(BackendItem):
 
     def get_children(self, start=0, request_count=0):
         if self.children == None:
-            self.children = map(self._create_track_from_playlist_item,
+            self.children = list(map(self._create_track_from_playlist_item,
                                 # who knows what the other children/magic numbers mean
-                                self.source.get_children()[0].get_children()[1].get_children()[0].get_model())
+                                self.source.get_children()[0].get_children()[1].get_children()[0].get_model()))
         return self.children
 
     def _create_track_from_playlist_item(self, item):
@@ -221,7 +221,7 @@ class Artist(BackendItem):
 
         def collate (model, path, iter):
             id = model.get(iter, 0)[0]
-            print id
+            print(id)
             children.append(Track(self.store, id, self.id))
 
         self.tracks_per_artist_query.foreach(collate)
@@ -377,7 +377,7 @@ class Track(BackendItem):
         self.info("Track get_path uri = %r", uri)
         location = None
         if uri.startswith("file://"):
-            location = unicode(urllib.unquote(uri[len("file://"):]))
+            location = str(urllib.parse.unquote(uri[len("file://"):]))
             self.info("Track get_path location = %r", location)
 
         return location
@@ -464,7 +464,7 @@ class MediaStore(BackendStore):
     def get_by_id(self, id):
 
         self.info("looking for id %r", id)
-        if isinstance(id, basestring) and id.startswith('artist_all_tracks_'):
+        if isinstance(id, str) and id.startswith('artist_all_tracks_'):
             try:
                 return self.containers[id]
             except:
@@ -533,7 +533,7 @@ class MediaStore(BackendStore):
             self.album_query.foreach(collate)
             self.albums = albums
 
-        albums = self.albums.values()  # .sort(cmp=album_sort)
+        albums = list(self.albums.values())  # .sort(cmp=album_sort)
         albums.sort(cmp=album_sort)
         return albums
 

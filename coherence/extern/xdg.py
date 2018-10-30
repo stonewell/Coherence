@@ -43,5 +43,5 @@ def xdg_content(what='public'):
     return None
 
 if __name__ == '__main__':
-    print 'public:', xdg_content()
-    print 'private:', xdg_content('private')
+    print('public:', xdg_content())
+    print('private:', xdg_content('private'))

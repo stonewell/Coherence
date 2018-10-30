@@ -37,7 +37,7 @@
 
 from coherence.upnp.core.utils import getPage
 
-import StringIO
+import io
 import string
 
 
@@ -90,7 +90,7 @@ class Gallery:
         url = self.url
         if (len(request) > 0):
             url += '?'
-            for key, value in request.iteritems():
+            for key, value in request.items():
                 url += '%s=%s&' % (key, value)
         headers = None
         if self.cookie != '':
@@ -106,15 +106,15 @@ class Gallery:
             except:
                 pass
 
-            if headers.has_key('set-cookie'):
+            if 'set-cookie' in headers:
                 cookie_info = headers['set-cookie'][-1]
                 self.cookie = cookie_info.split(';')[0]
 
             return response
 
         def gotError(error):
-            print "Unable to process Gallery2 request: %s" % url
-            print "Error: %s" % error
+            print("Unable to process Gallery2 request: %s" % url)
+            print("Error: %s" % error)
             return None
 
         d = getPage(url, headers=headers)
@@ -128,7 +128,7 @@ class Gallery:
         response - The response from a gallery request, encoded according
                    to the gallery remote protocol
         """
-        myStr = StringIO.StringIO(response)
+        myStr = io.StringIO(response)
 
         for line in myStr:
             if string.find(line, '#__GR2PROTO__') != -1:
@@ -185,7 +185,7 @@ class Gallery:
 
         def gotPage(result):
             if result is None:
-                print "Unable to login as %s to gallery2  server (%s)" % (username, self.url)
+                print("Unable to login as %s to gallery2  server (%s)" % (username, self.url))
                 return
             self.logged_in = 1
 
@@ -216,7 +216,7 @@ class Gallery:
 
         def gotResponse(response):
             if response is None:
-                print "Unable to retrieve list of albums!"
+                print("Unable to retrieve list of albums!")
                 return None
 
             albums = {}
@@ -350,9 +350,9 @@ class Gallery:
         def gotResponse(response):
             res_dict = {}
 
-            if response.has_key('auto_resize'):
+            if 'auto_resize' in response:
                 res_dict['auto_resize'] = response['auto_resize']
-            if response.has_key('add_to_beginning'):
+            if 'add_to_beginning' in response:
                 res_dict['add_to_beginning'] = response['add_to_beginning']
 
             return res_dict
@@ -430,7 +430,7 @@ class Gallery:
 
         def gotResponse (response):
             if response is None:
-                print "Unable to retrieve list of item for album %s." % album
+                print("Unable to retrieve list of item for album %s." % album)
                 return None
 
             images = []

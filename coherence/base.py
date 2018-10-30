@@ -165,7 +165,7 @@ class __PluginsClass(log.Loggable):
         if pkg_resources and isinstance(plugin, pkg_resources.EntryPoint):
             try:
                 plugin = plugin.load(require=False)
-            except (ImportError, AttributeError, pkg_resources.ResolutionError), msg:
+            except (ImportError, AttributeError, pkg_resources.ResolutionError) as msg:
                 self.warning("Can't load plugin %s (%s), maybe missing dependencies...", plugin.name, msg)
                 self.info(traceback.format_exc())
                 del self._plugins[key]
@@ -187,7 +187,7 @@ class __PluginsClass(log.Loggable):
         return self.__setitem__(key, value)
 
     def keys(self):
-        return self._plugins.keys()
+        return list(self._plugins.keys())
 
     def _collect(self, ids=_valids):
         if not isinstance(ids, (list, tuple)):
@@ -279,13 +279,13 @@ class Coherence(log.Loggable):
 
         except (KeyError, TypeError):
             subsystem_log = config.get('subsystem_log', {})
-            for subsystem, level in subsystem_log.items():
+            for subsystem, level in list(subsystem_log.items()):
                 #self.info( "setting log-level for subsystem %s to %s" % (subsystem,level))
                 logging.getLogger(subsystem.lower()).setLevel(level.upper())
         try:
             logfile = config.get('logging').get('logfile', None)
             if logfile != None:
-                logfile = unicode(logfile)
+                logfile = str(logfile)
         except (KeyError, AttributeError, TypeError):
             logfile = config.get('logfile', None)
         log.init(logfile, logmode.upper())
@@ -364,12 +364,12 @@ class Coherence(log.Loggable):
             self.info("No plugin defined!")
         else:
             if isinstance(plugins, dict):
-                for plugin, arguments in plugins.items():
+                for plugin, arguments in list(plugins.items()):
                     try:
                         if not isinstance(arguments, dict):
                             arguments = {}
                         self.add_plugin(plugin, **arguments)
-                    except Exception, msg:
+                    except Exception as msg:
                         self.warning("Can't enable plugin, %s: %s!", plugin, msg)
                         self.info(traceback.format_exc())
             else:
@@ -388,7 +388,7 @@ class Coherence(log.Loggable):
                             if 'uuid' not in plugin:
                                 plugin['uuid'] = str(backend.uuid)[5:]
                                 self.config.save()
-                    except Exception, msg:
+                    except Exception as msg:
                         self.warning("Can't enable plugin, %s: %s!", plugin, msg)
                         self.info(traceback.format_exc())
 
@@ -415,7 +415,7 @@ class Coherence(log.Loggable):
                     self.ctrl = ControlPoint(self)
                 self.ctrl.auto_client_append('InternetGatewayDevice')
                 self.dbus = dbus_service.DBusPontoon(self.ctrl)
-            except Exception, msg:
+            except Exception as msg:
                 self.warning("Unable to activate dbus sub-system: %r", msg)
                 self.debug(traceback.format_exc())
             else:
@@ -454,9 +454,9 @@ class Coherence(log.Loggable):
                     self.exception("Can't enable %s plugin for sub-system %s",
                                    plugin, device)
                     self.debug(traceback.format_exc())
-        except KeyError, error:
+        except KeyError as error:
             self.warning("Can't enable %s plugin, not found!", plugin)
-        except Exception, msg:
+        except Exception as msg:
             self.warning("Can't enable %s plugin, %s!", plugin, msg)
             self.debug(traceback.format_exc())
 
@@ -465,7 +465,7 @@ class Coherence(log.Loggable):
         """ plugin is the object return by add_plugin """
         """ or an UUID string                         """
 
-        if isinstance(plugin, basestring):
+        if isinstance(plugin, str):
             try:
                 plugin = self.active_backends[plugin]
             except KeyError:
@@ -508,7 +508,7 @@ class Coherence(log.Loggable):
         for plugin in plugins:
             try:
                 if plugin['uuid'] == uuid:
-                    for k, v in items.items():
+                    for k, v in list(items.items()):
                         plugin[k] = v
                     self.config.save()
             except:
@@ -549,7 +549,7 @@ class Coherence(log.Loggable):
                 self.dbus.shutdown()
                 self.dbus = None
 
-            for backend in self.active_backends.itervalues():
+            for backend in self.active_backends.values():
                 backend.unregister()
             self.active_backends = {}
             # send service unsubscribe messages

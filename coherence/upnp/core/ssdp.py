@@ -51,7 +51,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
                                                     listenMultiple=True)
                 #self.port.setLoopbackMode(1)
                 self._port.joinGroup(SSDP_ADDR, interface=interface)
-            except error.CannotListenError, err:
+            except error.CannotListenError as err:
                 self.error("Error starting the SSDP-server: %s", err)
                 self.error("There seems to already be a SSDP server "
                            "running on this host, no need starting a "
@@ -84,8 +84,9 @@ class SSDPServer(DatagramProtocol, log.Loggable):
                 if self._known[st]['MANIFESTATION'] == 'local':
                     self.doByebye(st)
 
-    def datagramReceived(self, data, (host, port)):
+    def datagramReceived(self, data, xxx_todo_changeme):
         """Handle a received multicast datagram."""
+        (host, port) = xxx_todo_changeme
         cmd, headers, content = utils.parse_http_response(data)
         cmd = cmd[:2] # we are interested in only the first two elements
         del content # we do not need the content
@@ -148,7 +149,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
         del self._known[usn]
 
     def isKnown(self, usn):
-        return self._known.has_key(usn)
+        return usn in self._known
 
     def service_seen(self, host, service_type, headers):
         """
@@ -168,10 +169,10 @@ class SSDPServer(DatagramProtocol, log.Loggable):
             self.debug('updating last-seen for %r', headers['usn'])
             return False
 
-    def _notifyReceived(self, headers, (host, port)):
+    def _notifyReceived(self, headers, xxx_todo_changeme1):
         """Process a presence announcement.  We just remember the
         details of the SSDP service announced."""
-
+        (host, port) = xxx_todo_changeme1
         self.info('Notification from (%s,%d) for %s', host, port, headers['nt'])
         self.debug('Notification headers: %s', headers)
 
@@ -190,19 +191,19 @@ class SSDPServer(DatagramProtocol, log.Loggable):
                   delay, usn, destination)
         try:
             self.transport.write(response, destination)
-        except (AttributeError, socket.error), msg:
+        except (AttributeError, socket.error) as msg:
             self.info("failure sending out byebye notification: %r", msg)
 
-    def _discoveryRequest(self, headers, (host, port)):
+    def _discoveryRequest(self, headers, xxx_todo_changeme2):
         """Process a discovery request.  The response must be sent to
         the address specified by (host, port)."""
-
+        (host, port) = xxx_todo_changeme2
         self.info('Discovery request from (%s,%d) for %s',
                   host, port, headers['st'])
         louie.send('Coherence.UPnP.Log', None, 'SSDP', host,
                    'M-Search for %s' % headers['st'])
         # Do we know about this service?
-        for known in self._known.values():
+        for known in list(self._known.values()):
             if known['MANIFESTATION'] == 'remote':
                 continue
             elif known['SILENT'] and headers['st'] == 'ssdp:all':
@@ -211,7 +212,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
                   headers['st'] == 'ssdp:all'):
                 response = []
                 response.append('HTTP/1.1 200 OK')
-                for k, v in known.iteritems():
+                for k, v in known.items():
                     if k not in ('MANIFESTATION', 'SILENT', 'HOST'):
                         response.append('%s: %s' % (k, v))
                 response.append('DATE: %s' % datetimeToString())
@@ -235,7 +236,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
                 del stcpy[k]
             except:
                 pass
-        resp.extend(': '.join(x) for x in stcpy.iteritems())
+        resp.extend(': '.join(x) for x in iter(stcpy.items()))
         resp.extend(('', ''))
         return '\r\n'.join(resp)
 
@@ -250,7 +251,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
             # :fixme: why is this sent twice?
             self.transport.write(resp, (SSDP_ADDR, SSDP_PORT))
             self.transport.write(resp, (SSDP_ADDR, SSDP_PORT))
-        except (AttributeError, socket.error), msg:
+        except (AttributeError, socket.error) as msg:
             self.info("failure sending out alive notification: %r", msg)
 
     def doByebye(self, usn):
@@ -262,12 +263,12 @@ class SSDPServer(DatagramProtocol, log.Loggable):
         if self.transport:
             try:
                 self.transport.write(resp, (SSDP_ADDR, SSDP_PORT))
-            except (AttributeError, socket.error), msg:
+            except (AttributeError, socket.error) as msg:
                 self.info("failure sending out byebye notification: %r",
                           msg)
 
     def _resendNotify(self):
-        for usn, entry in self._known.iteritems():
+        for usn, entry in self._known.items():
             if entry['MANIFESTATION'] == 'local':
                 self.doNotify(usn)
 
@@ -277,7 +278,7 @@ class SSDPServer(DatagramProtocol, log.Loggable):
         """
         self.debug("Checking devices/services are still valid")
         removable = []
-        for usn, entry in self._known.iteritems():
+        for usn, entry in self._known.items():
             if entry['MANIFESTATION'] == 'local':
                 continue
             expiry = int(entry['CACHE-CONTROL'].split('=')[1])

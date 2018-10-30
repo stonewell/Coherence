@@ -19,7 +19,7 @@
 import os
 import time
 
-from urllib import unquote
+from urllib.parse import unquote
 
 from gi.repository import Nautilus, GObject, Gtk, GdkPixbuf
 
@@ -36,12 +36,12 @@ OBJECT_PATH = '/org/Coherence'
 class CoherencePlayExtension(GObject.GObject, Nautilus.MenuProvider):
 
     def __init__(self):
-        print "CoherencePlayExtension", os.getpid()
+        print("CoherencePlayExtension", os.getpid())
         self.coherence = None
         try:
             self.init_controlpoint()
         except:
-            print "can't setup Coherence connection"
+            print("can't setup Coherence connection")
 
     def init_controlpoint(self):
         self.bus = dbus.SessionBus()
@@ -65,7 +65,7 @@ class CoherencePlayExtension(GObject.GObject, Nautilus.MenuProvider):
         i = 0
         menuitem = None
         for device in devices:
-            print device['friendly_name'], device['device_type']
+            print(device['friendly_name'], device['device_type'])
             if device['device_type'].split(':')[3] == 'MediaRenderer':
                 if i == 0:
                     menuitem = Nautilus.MenuItem(name='CoherencePlayExtension::Play',
@@ -92,7 +92,7 @@ class CoherencePlayExtension(GObject.GObject, Nautilus.MenuProvider):
         return menuitem,
 
     def play(self, menu, service, uuid, files):
-        print "play", uuid, service, files
+        print("play", uuid, service, files)
         #pin = self.coherence.get_pin('Nautilus::MediaServer::%d'%os.getpid())
         #if pin == 'Coherence::Pin::None':
         #    return
@@ -102,10 +102,10 @@ class CoherencePlayExtension(GObject.GObject, Nautilus.MenuProvider):
         uri = self.coherence.create_oob(file)
         #result = self.coherence.call_plugin(pin,'get_url_by_name',{'name':file})
         #print 'result', result
-        print uri
+        print(uri)
 
         s = self.bus.get_object(BUS_NAME + '.service', service)
-        print s
+        print(s)
         s.action('stop', '')
         s.action('set_av_transport_uri', {'current_uri': uri})
         s.action('play', '')

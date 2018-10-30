@@ -78,16 +78,16 @@ if __name__ == '__main__':
 
 
     def notify(self, filepath, mask, data=None):
-        print "event %s on %s" % (
-            ', '.join(inotify.humanReadableMask(mask)), filepath)
+        print("event %s on %s" % (
+            ', '.join(inotify.humanReadableMask(mask)), filepath))
 
     i = INotify()
-    print i
-    i.watch(unicode('/tmp/aaa'), autoAdd=True, callbacks=[notify],
+    print(i)
+    i.watch(str('/tmp/aaa'), autoAdd=True, callbacks=[notify],
             recursive=True)
 
     i2 = INotify()
-    print i2
+    print(i2)
     i2.watch('/', autoAdd=True, callbacks=[notify], recursive=False)
 
     reactor.run()

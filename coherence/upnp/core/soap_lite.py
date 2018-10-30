@@ -88,14 +88,14 @@ def build_soap_call(method, arguments, is_response=False,
     # append the arguments
     if isinstance(arguments, (dict, OrderedDict)):
         type_map = {str: 'xsd:string',
-                    unicode: 'xsd:string',
+                    str: 'xsd:string',
                     int: 'xsd:int',
                     float: 'xsd:float',
                     bool: 'xsd:boolean'}
 
-        for arg_name, arg_val in arguments.iteritems():
+        for arg_name, arg_val in arguments.items():
             arg_type = type_map[type(arg_val)]
-            if arg_type == 'xsd:string' and type(arg_val) == unicode:
+            if arg_type == 'xsd:string' and type(arg_val) == str:
                 arg_val = arg_val.encode('utf-8')
             if arg_type == 'xsd:int' or arg_type == 'xsd:float':
                 arg_val = str(arg_val)

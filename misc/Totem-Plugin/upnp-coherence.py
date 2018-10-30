@@ -32,12 +32,12 @@ class UPnPClient(totem.Plugin):
                 selection = self.ui.treeview.get_selection()
                 if not selection.path_is_selected(row_path):
                     self.ui.treeview.set_cursor(row_path, column, False)
-                print "button_pressed", row_path, (row_path[0], )
+                print("button_pressed", row_path, (row_path[0], ))
                 iter = self.ui.store.get_iter((row_path[0], ))
                 udn, = self.ui.store.get(iter, UDN_COLUMN)
                 iter = self.ui.store.get_iter(row_path)
                 upnp_class, url = self.ui.store.get(iter, UPNP_CLASS_COLUMN, SERVICE_COLUMN)
-                print udn, upnp_class, url
+                print(udn, upnp_class, url)
                 if(not upnp_class.startswith('object.container') and
                    not upnp_class == 'root'):
                     self.create_item_context(has_delete=self.ui.device_has_action(udn, 'ContentDirectory', 'DestroyObject'))

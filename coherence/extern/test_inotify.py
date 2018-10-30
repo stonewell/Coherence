@@ -37,15 +37,15 @@ class TestINotify(unittest.TestCase):
         # and one when we close the file after writing it.
         def _callback(wp, filename, mask, data):
             try:
-                self.assertEquals(filename.basename(), NEW_FILENAME)
-                self.assertEquals(data, EXTRA_ARG)
+                self.assertEqual(filename.basename(), NEW_FILENAME)
+                self.assertEqual(data, EXTRA_ARG)
                 calls.append(filename)
                 if len(calls) == 2:
-                    self.assert_(mask & inotify.IN_CLOSE_WRITE)
+                    self.assertTrue(mask & inotify.IN_CLOSE_WRITE)
                     d.callback(None)
                 elif len(calls) == 1:
-                    self.assert_(mask & inotify.IN_CREATE)
-            except Exception, e:
+                    self.assertTrue(mask & inotify.IN_CREATE)
+            except Exception as e:
                 d.errback(e)
 
         self.inotify.watch(
@@ -70,9 +70,9 @@ class TestINotify(unittest.TestCase):
             # directories, so we need to defer this check.
             def _():
                 try:
-                    self.assert_(self.inotify._isWatched(SUBDIR))
+                    self.assertTrue(self.inotify._isWatched(SUBDIR))
                     d.callback(None)
-                except Exception, e:
+                except Exception as e:
                     d.errback(e)
             reactor.callLater(0, _)
 
@@ -99,19 +99,19 @@ class TestINotify(unittest.TestCase):
             # directories, so we need to defer this check.
             def _():
                 try:
-                    self.assert_(self.inotify._isWatched(SUBDIR))
+                    self.assertTrue(self.inotify._isWatched(SUBDIR))
                     SUBDIR.remove()
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
                     d.errback(e)
 
             def _eb():
                 # second call, we have just removed the subdir
                 try:
-                    self.assert_(not self.inotify._isWatched(SUBDIR))
+                    self.assertTrue(not self.inotify._isWatched(SUBDIR))
                     d.callback(None)
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
                     d.errback(e)
 
             if not calls:
@@ -139,9 +139,9 @@ class TestINotify(unittest.TestCase):
         self.inotify.watch(
             self.dirname, autoAdd=True
         )
-        self.assert_(self.inotify._isWatched(self.dirname))
+        self.assertTrue(self.inotify._isWatched(self.dirname))
         self.inotify.ignore(self.dirname)
-        self.assert_(not self.inotify._isWatched(self.dirname))
+        self.assertTrue(not self.inotify._isWatched(self.dirname))
 
     def test_flagToHuman(self):
         """
@@ -170,11 +170,11 @@ class TestINotify(unittest.TestCase):
             inotify.IN_ONESHOT: 'one_shot'
             }
 
-        for mask, value in FLAG_TO_HUMAN.iteritems():
-            self.assert_(inotify.flag_to_human(mask)[0], value)
+        for mask, value in FLAG_TO_HUMAN.items():
+            self.assertTrue(inotify.flag_to_human(mask)[0], value)
 
         checkMask = inotify.IN_CLOSE_WRITE | inotify.IN_ACCESS | inotify.IN_OPEN
-        self.assert_(
+        self.assertTrue(
             len(inotify.flag_to_human(checkMask)),
             3
         )
@@ -193,7 +193,7 @@ class TestINotify(unittest.TestCase):
         # let's even call this twice so that we test that nothing breaks
         self.inotify.watch(self.dirname, recursive=True)
         for d in DIRS:
-            self.assert_(self.inotify._isWatched(d))
+            self.assertTrue(self.inotify._isWatched(d))
 
     def test_noAutoAddSubdirectory(self):
         """
@@ -206,9 +206,9 @@ class TestINotify(unittest.TestCase):
             # directories, so we need to defer this check.
             def _():
                 try:
-                    self.assert_(not self.inotify._isWatched(SUBDIR))
+                    self.assertTrue(not self.inotify._isWatched(SUBDIR))
                     d.callback(None)
-                except Exception, e:
+                except Exception as e:
                     d.errback(e)
             reactor.callLater(0, _)
 
@@ -238,18 +238,18 @@ class TestINotify(unittest.TestCase):
             # directories, so we need to defer this check.
             def _():
                 try:
-                    self.assert_(self.inotify._isWatched(SUBDIR))
-                    self.assert_(self.inotify._isWatched(SUBDIR2))
-                    self.assert_(self.inotify._isWatched(SUBDIR3))
+                    self.assertTrue(self.inotify._isWatched(SUBDIR))
+                    self.assertTrue(self.inotify._isWatched(SUBDIR2))
+                    self.assertTrue(self.inotify._isWatched(SUBDIR3))
                     CREATED = SOME_FILES.union(
                         set([SUBDIR.basename(),
                              SUBDIR2.basename(),
                              SUBDIR3.basename()
                             ])
                     )
-                    self.assert_(len(calls), len(CREATED))
-                    self.assertEquals(calls, CREATED)
-                except Exception, e:
+                    self.assertTrue(len(calls), len(CREATED))
+                    self.assertEqual(calls, CREATED)
+                except Exception as e:
                     d.errback(e)
                 else:
                     d.callback(None)

@@ -115,8 +115,8 @@ class Action(log.Loggable):
             self.info("changing action to %r %r", action_name, kwargs)
 
         if hasattr(device_client, 'overlay_headers'):
-            self.info("action call has headers %r", kwargs.has_key('headers'))
-            if kwargs.has_key('headers'):
+            self.info("action call has headers %r", 'headers' in kwargs)
+            if 'headers' in kwargs:
                 kwargs['headers'].update(device_client.overlay_headers)
             else:
                 kwargs['headers'] = device_client.overlay_headers
@@ -125,7 +125,7 @@ class Action(log.Loggable):
         ordered_arguments = OrderedDict()
         for argument in self.get_in_arguments():
             ordered_arguments[argument.name] = kwargs[argument.name]
-        if kwargs.has_key('headers'):
+        if 'headers' in kwargs:
             ordered_arguments['headers'] = kwargs['headers']
 
         client = self._get_client()

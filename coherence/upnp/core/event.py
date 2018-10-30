@@ -5,7 +5,7 @@
 # Copyright 2006,2007,2008,2009 Frank Scholz <coherence@beebits.net>
 
 import time
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 from twisted.internet import reactor, defer
 from twisted.web import resource, server
@@ -122,11 +122,11 @@ class EventSubscriptionServer(resource.Resource, log.Loggable):
             try:
                 #print self.subscribers
                 #print headers['sid']
-                if self.subscribers.has_key(headers['sid']):
+                if headers['sid'] in self.subscribers:
                     s = self.subscribers[headers['sid']]
                     s['timeout'] = headers['timeout']
                     s['created'] = time.time()
-                elif not headers.has_key('callback'):
+                elif 'callback' not in headers:
                     request.setResponseCode(404)
                     request.setHeader('SERVER', SERVER_ID)
                     request.setHeader('CONTENT-LENGTH', 0)

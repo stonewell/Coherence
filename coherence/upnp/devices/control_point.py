@@ -39,7 +39,7 @@ class DeviceQuery(object):
     def fire(self, device):
         if callable(self.callback):
             self.callback(device)
-        elif isinstance(self.callback, basestring):
+        elif isinstance(self.callback, str):
             louie.send(self.callback, None, device=device)
         self.fired = True
 
@@ -167,20 +167,20 @@ class ControlPoint(log.Loggable):
 
     def propagate(self, event):
         self.info('propagate: %r', event)
-        if event.get_sid() in service.subscribers.keys():
+        if event.get_sid() in list(service.subscribers.keys()):
             try:
                 service.subscribers[event.get_sid()].process_event(event)
-            except Exception, msg:
+            except Exception as msg:
                 self.debug(msg)
                 self.debug(traceback.format_exc())
                 pass
 
     def put_resource(self, url, path):
         def got_result(result):
-            print result
+            print(result)
 
         def got_error(result):
-            print "error", result
+            print("error", result)
 
         try:
             f = open(path)
@@ -207,20 +207,20 @@ class XMLRPC(xmlrpc.XMLRPC):
         self.allowNone = True
 
     def xmlrpc_list_devices(self):
-        print "list_devices"
+        print("list_devices")
         r = []
         for device in self.control_point.get_devices():
             #print device.get_friendly_name(), device.get_service_type(), device.get_location(), device.get_id()
             d = {}
-            d[u'friendly_name'] = device.get_friendly_name()
-            d[u'device_type'] = device.get_device_type()
-            d[u'location'] = unicode(device.get_location())
-            d[u'id'] = unicode(device.get_id())
+            d['friendly_name'] = device.get_friendly_name()
+            d['device_type'] = device.get_device_type()
+            d['location'] = str(device.get_location())
+            d['id'] = str(device.get_id())
             r.append(d)
         return r
 
     def xmlrpc_mute_device(self, device_id):
-        print "mute"
+        print("mute")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -229,7 +229,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_unmute_device(self, device_id):
-        print "unmute", device_id
+        print("unmute", device_id)
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -238,7 +238,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_set_volume(self, device_id, volume):
-        print "set volume"
+        print("set volume")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -247,7 +247,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_play(self, device_id):
-        print "play"
+        print("play")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -256,7 +256,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_pause(self, device_id):
-        print "pause"
+        print("pause")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -265,7 +265,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_stop(self, device_id):
-        print "stop"
+        print("stop")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -274,16 +274,16 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_next(self, device_id):
-        print "next"
+        print("next")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
-            client.av_transport.next()
+            next(client.av_transport)
             return "Ok"
         return "Error"
 
     def xmlrpc_previous(self, device_id):
-        print "previous"
+        print("previous")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -292,7 +292,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_set_av_transport_uri(self, device_id, uri):
-        print "set_av_transport_uri"
+        print("set_av_transport_uri")
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -301,7 +301,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_create_object(self, device_id, container_id, arguments):
-        print "create_object", arguments
+        print("create_object", arguments)
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -310,7 +310,7 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_import_resource(self, device_id, source_uri, destination_uri):
-        print "import_resource", source_uri, destination_uri
+        print("import_resource", source_uri, destination_uri)
         device = self.control_point.get_device_with_id(device_id)
         if device != None:
             client = device.get_client()
@@ -319,19 +319,19 @@ class XMLRPC(xmlrpc.XMLRPC):
         return "Error"
 
     def xmlrpc_put_resource(self, url, path):
-        print "put_resource", url, path
+        print("put_resource", url, path)
         self.control_point.put_resource(url, path)
         return "Ok"
 
     def xmlrpc_ping(self):
-        print "ping"
+        print("ping")
         return "Ok"
 
 
 def startXMLRPC(control_point, port):
     from twisted.web import server
     r = XMLRPC(control_point)
-    print "XMLRPC-API on port %d ready" % port
+    print("XMLRPC-API on port %d ready" % port)
     reactor.listenTCP(port, server.Site(r))
 
 
@@ -349,22 +349,22 @@ if __name__ == '__main__':
     #ctrl = ControlPoint(Coherence(config))
 
     def show_devices():
-        print "show_devices"
+        print("show_devices")
         for d in ctrl.get_devices():
-            print d, d.get_id()
+            print(d, d.get_id())
 
 
     def the_result(r):
-        print "result", r, r.get_id()
+        print("result", r, r.get_id())
 
 
     def query_devices():
-        print "query_devices"
+        print("query_devices")
         ctrl.add_query(DeviceQuery('host', '192.168.1.163', the_result))
 
 
     def query_devices2():
-        print "query_devices with timeout"
+        print("query_devices with timeout")
         ctrl.add_query(DeviceQuery('host', '192.168.1.163', the_result, timeout=10, oneshot=False))
     #reactor.callLater(2, show_devices)
     #reactor.callLater(3, query_devices)

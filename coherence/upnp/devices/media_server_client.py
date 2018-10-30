@@ -33,6 +33,6 @@ class MediaServerClient(BasicClient):
         self.info("results= %s", results)
 
     def process_meta(self, results):
-        for k, v in results.iteritems():
+        for k, v in results.items():
             dfr = self.content_directory.browse(k, "BrowseMetadata")
             dfr.addCallback(self.print_results)

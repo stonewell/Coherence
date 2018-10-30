@@ -17,4 +17,4 @@
 # Written by Brent Woodruff <brent@fprimex.com>
 #        and John Sutherland <garion@twcny.rr.com>
 # Adapted by Jean-Michel Sizun <jm.sizunATfreeDOTfr>
-from gallery import Gallery
+from .gallery import Gallery

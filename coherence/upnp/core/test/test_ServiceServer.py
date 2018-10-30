@@ -153,7 +153,7 @@ class ValidButEmptyDescriptionXML(unittest.TestCase):
             ('<ns0:propertyset xmlns:ns0="urn:schemas-upnp-org:event-1-0">'
              '<ns0:property><DummyVariable>987</DummyVariable></ns0:property>'
              '</ns0:propertyset>'))
-        self.assertRaisesRegexp(TypeError, '^cannot serialize',
+        self.assertRaisesRegex(TypeError, '^cannot serialize',
                                 srv.build_single_notification, 0, 321, 987)
 
     def test_build_last_change_event(self):
@@ -207,7 +207,7 @@ class ExpectedDefinitionsMixin(object):
         srv = self.service_server
         # there is one instance
         self.assertEqual(len(srv._variables), 1)
-        self.assertEqual(srv._variables.keys(), [0])
+        self.assertEqual(list(srv._variables.keys()), [0])
         compare_variables(srv._variables[0])
 
 

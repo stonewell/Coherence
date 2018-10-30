@@ -36,7 +36,7 @@ class MirabeauTubePublisherMixin(tube.TubePublisherMixin):
 
     def _media_server_found(self, infos, udn):
         uuid = udn[5:]
-        for device in self.coherence.dbus.devices.values():
+        for device in list(self.coherence.dbus.devices.values()):
             if device.uuid == uuid:
                 self._register_device(device)
                 return
@@ -55,7 +55,7 @@ class MirabeauTubePublisherMixin(tube.TubePublisherMixin):
             service.add_to_connection(self.service_tube, service.path)
 
     def _media_server_removed(self, udn):
-        for device in self.coherence.dbus.devices.values():
+        for device in list(self.coherence.dbus.devices.values()):
             if udn == device.device.get_id():
                 if self.allowed_devices != None and device.uuid not in self.allowed_devices:
                     # the device is not allowed, no reason to
@@ -84,9 +84,9 @@ class MirabeauTubePublisherMixin(tube.TubePublisherMixin):
                                                    self.device_tube,
                                                    self.service_tube):
             self.announce_done = True
-            allowed_device_types = [u'urn:schemas-upnp-org:device:MediaServer:2',
-                                    u'urn:schemas-upnp-org:device:MediaServer:1']
-            devices = self.coherence.dbus.devices.values()
+            allowed_device_types = ['urn:schemas-upnp-org:device:MediaServer:2',
+                                    'urn:schemas-upnp-org:device:MediaServer:1']
+            devices = list(self.coherence.dbus.devices.values())
             for device in devices:
                 if device.get_device_type() in allowed_device_types:
                     self._register_device(device)

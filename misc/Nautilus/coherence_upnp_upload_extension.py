@@ -49,7 +49,7 @@ def show_upload_widget(files, standalone=True):
 
 try:
     import nautilus
-    from urllib import unquote
+    from urllib.parse import unquote
     import dbus
     from dbus.mainloop.glib import DBusGMainLoop
     DBusGMainLoop(set_as_default=True)
@@ -70,7 +70,7 @@ try:
     class CoherenceUploadExtension(nautilus.MenuProvider):
 
         def __init__(self):
-            print "CoherenceUploadExtension", os.getpid()
+            print("CoherenceUploadExtension", os.getpid())
             log("CoherenceUploadExtension %r" % os.getpid())
             self.coherence = None
             try:
@@ -78,7 +78,7 @@ try:
             except:
                 import traceback
                 log("can't setup %r" % traceback.format_exc())
-                print "can't setup Coherence connection"
+                print("can't setup Coherence connection")
 
         def init_controlpoint(self):
             self.bus = dbus.SessionBus()

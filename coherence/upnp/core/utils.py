@@ -5,8 +5,8 @@
 # Copyright 2006, Frank Scholz <coherence@beebits.net>
 
 from os.path import abspath
-import urlparse
-from urlparse import urlsplit
+import urllib.parse
+from urllib.parse import urlsplit
 
 from coherence.extern.et import parse_xml as et_parse_xml
 
@@ -24,7 +24,7 @@ from twisted.python.util import InsensitiveDict
 try:
     from twisted.protocols._c_urlarg import unquote
 except ImportError:
-    from urllib import unquote
+    from urllib.parse import unquote
 
 try:
     import netifaces
@@ -34,7 +34,7 @@ except ImportError:
 
 
 def means_true(value):
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         value = value.lower()
     return value in [True, 1, '1', 'true', 'yes', 'ok']
 
@@ -148,7 +148,7 @@ def get_host_address():
                         if l[1] == '00000000':  # default route...
                             route.close()
                             return get_ip_address(l[0])
-        except IOError, msg:
+        except IOError as msg:
             """ fallback to parsing the output of netstat """
             from twisted.internet import utils
 
@@ -174,7 +174,7 @@ def get_host_address():
             d.addCallback(result)
             d.addErrback(fail)
             return d
-        except Exception, msg:
+        except Exception as msg:
             import traceback
             traceback.print_exc()
 
@@ -185,14 +185,14 @@ def get_host_address():
 def de_chunk_payload(response):
 
     try:
-        import cStringIO as StringIO
+        import io as StringIO
     except ImportError:
-        import StringIO
+        import io
     """ This method takes a chunked HTTP data object and unchunks it."""
-    newresponse = StringIO.StringIO()
+    newresponse = io.StringIO()
     # chunked encoding consists of a bunch of lines with
     # a length in hex followed by a data chunk and a CRLF pair.
-    response = StringIO.StringIO(response)
+    response = io.StringIO(response)
 
     def read_chunk_length():
         line = response.readline()
@@ -235,7 +235,7 @@ class Request(server.Request):
         if path == "":
             self.postpath = []
         else:
-            self.postpath = map(unquote, path[1:].split('/'))
+            self.postpath = list(map(unquote, path[1:].split('/')))
 
         try:
             def deferred_rendering(r):
@@ -353,7 +353,7 @@ class ReverseProxyResource(proxy.ReverseProxyResource):
             hostname = "%s:%d" % (self.host, self.port)
             request.requestHeaders.setRawHeaders('host', [hostname])
         request.content.seek(0, 0)
-        qs = urlparse.urlparse(request.uri)[4]
+        qs = urllib.parse.urlparse(request.uri)[4]
         if qs == '':
             qs = self.qs
         if qs:
@@ -490,7 +490,7 @@ class BufferFile(static.File):
 
         # FIXME detect when request is REALLY finished
         if request is None or request.finished:
-            print "No request to render!"
+            print("No request to render!")
             return ''
 
         """You know what you doing."""
@@ -526,7 +526,7 @@ class BufferFile(static.File):
 
         try:
             f = self.openForReading()
-        except IOError, e:
+        except IOError as e:
             import errno
             if e[0] == errno.EACCES:
                 return error.ForbiddenResource().render(request)
@@ -551,8 +551,8 @@ class BufferFile(static.File):
                 # Are we requesting something beyond the current size of the file?
                 if (start >= self.getFileSize()):
                     # Retry later!
-                    print bytesrange
-                    print "Requesting data beyond current scope -> postpone rendering!"
+                    print(bytesrange)
+                    print("Requesting data beyond current scope -> postpone rendering!")
                     self.upnp_retry = reactor.callLater(1.0, self.render, request)
                     return server.NOT_DONE_YET
 

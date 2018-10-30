@@ -7,7 +7,7 @@
 # Licensed under the MIT license
 # http://opensource.org/licenses/mit-license.php
 
-from __future__ import print_function
+
 
 import rhythmdb
 import rb
@@ -19,12 +19,12 @@ import gconf
 import coherence.extern.louie as louie
 
 from coherence import log
-from CoherenceDBEntryType import CoherenceDBEntryType
+from .CoherenceDBEntryType import CoherenceDBEntryType
 
 REQUIRED_COHERENCE_VERSION = "0.6.4"
 
 # for the icon
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import gio
 
 # the gconf configuration
@@ -73,7 +73,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         from twisted.internet import gtk2reactor
         try:
             gtk2reactor.install()
-        except AssertionError, e:
+        except AssertionError as e:
             # sometimes it's already installed
             self.warning("gtk2reactor already installed %r" % e)
 
@@ -110,7 +110,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         if self.config.get_bool(gconf_keys['dms_active']):
             # create our own media server
             from coherence.upnp.devices.media_server import MediaServer
-            from MediaStore import MediaStore
+            from .MediaStore import MediaStore
 
             kwargs = {
                     'version': self.config.get_int(gconf_keys['dms_version']),
@@ -140,7 +140,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         if self.config.get_bool(gconf_keys['dmr_active']):
             # create our own media renderer
             from coherence.upnp.devices.media_renderer import MediaRenderer
-            from MediaPlayer import RhythmboxPlayer
+            from .MediaPlayer import RhythmboxPlayer
             kwargs = {
                 "version": self.config.get_int(gconf_keys['dmr_version']),
                 "no_thread_needed": True,
@@ -201,7 +201,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         del self.shell
         del self.coherence
 
-        for usn, source in self.sources.iteritems():
+        for usn, source in self.sources.items():
             source.delete_thyself()
         del self.sources
         # uninstall twisted reactor? probably not, since other things may have used it
@@ -211,7 +211,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         try:
             from coherence.base import Coherence
             from coherence import __version__
-        except ImportError, e:
+        except ImportError as e:
             print("Coherence not found")
             return None
         from distutils.version import LooseVersion
@@ -241,7 +241,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
 
     def removed_media_server(self, udn):
         self.info("upnp server went away %s" % udn)
-        if self.sources.has_key(udn):
+        if udn in self.sources:
             self.sources[udn].delete_thyself()
             del self.sources[udn]
 
@@ -258,7 +258,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         entry_type = CoherenceDBEntryType(client.device.get_id()[5:])
         db.register_entry_type(entry_type)
 
-        from UpnpSource import UpnpSource
+        from .UpnpSource import UpnpSource
         source = gobject.new(UpnpSource,
                     shell=self.shell,
                     entry_type=entry_type,

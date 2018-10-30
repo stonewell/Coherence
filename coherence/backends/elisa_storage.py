@@ -195,7 +195,7 @@ if __name__ == '__main__':
         p = 'localhost'
 
         def got_result(result):
-            print result
+            print(result)
 
         f = MediaStore(None, 'my media', p, 'http://localhost/', ())
 

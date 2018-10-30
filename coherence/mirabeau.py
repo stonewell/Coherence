@@ -33,7 +33,7 @@ class Mirabeau(log.Loggable):
         # on the specified protocol.
         account = config['account']
 
-        if isinstance(account, basestring):
+        if isinstance(account, str):
             bus = dbus.SessionBus()
             account = bus.get_object(ACCOUNT_MANAGER, account)
             #account_obj = bus.get_object(ACCOUNT_MANAGER, account)
@@ -69,7 +69,7 @@ class Mirabeau(log.Loggable):
         control_point.connect(self._igd_removed, '%s.removed' % igd_signal_name)
 
     def _igd_found(self, client, udn):
-        print "IGD found", client.device.get_friendly_name()
+        print("IGD found", client.device.get_friendly_name())
         device = client.wan_device.wan_connection_device
         self._igd_service = device.wan_ppp_connection or device.wan_ip_connection
         if self._igd_service:
@@ -118,7 +118,7 @@ class Mirabeau(log.Loggable):
 
     def state_variable_change(self, variable):
         if variable.name == 'ExternalIPAddress':
-            print "our external IP address is %s" % variable.value
+            print("our external IP address is %s" % variable.value)
             self._external_address = variable.value
 
     def _igd_removed(self, udn):
@@ -126,15 +126,15 @@ class Mirabeau(log.Loggable):
         self._portmapping_ready = False
 
     def found_peer(self, peer):
-        print "found", peer
+        print("found", peer)
 
     def disapeared_peer(self, peer):
-        print "disapeared", peer
+        print("disapeared", peer)
 
     def got_devices(self, devices):
         for device in devices:
             uuid = device.get_id()
-            print "MIRABEAU found:", uuid
+            print("MIRABEAU found:", uuid)
             self._tube_proxies.append(TubeDeviceProxy(self._coherence, device,
                                                       self._external_address))
 

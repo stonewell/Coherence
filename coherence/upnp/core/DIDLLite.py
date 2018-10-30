@@ -12,7 +12,7 @@ TODO:
 
 """
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 
 DC_NS = 'http://purl.org/dc/elements/1.1/'
@@ -346,14 +346,14 @@ class PlayContainerResource(Resource):
             raise AttributeError('missing first Child Id')
         self.protocolInfo = protocolInfo
 
-        args = ['sid=' + urllib.quote(sid),
-                'cid=' + urllib.quote(str(cid)),
-                'fid=' + urllib.quote(str(fid)),
-                'fii=' + urllib.quote(str(fii)),
-                'sc=' + urllib.quote(''),
-                'md=' + urllib.quote(str(0))]
+        args = ['sid=' + urllib.parse.quote(sid),
+                'cid=' + urllib.parse.quote(str(cid)),
+                'fid=' + urllib.parse.quote(str(fid)),
+                'fii=' + urllib.parse.quote(str(fii)),
+                'sc=' + urllib.parse.quote(''),
+                'md=' + urllib.parse.quote(str(0))]
 
-        self.data = 'dlna-playcontainer://' + urllib.quote(str(udn)) \
+        self.data = 'dlna-playcontainer://' + urllib.parse.quote(str(udn)) \
                                             + '?' + '&'.join(args)
 
 
@@ -720,7 +720,7 @@ class VideoItem(Item):
 
     def toElement(self, **kwargs):
         root = Item.toElement(self, **kwargs)
-        for attr_name, ns in self.valid_attrs.iteritems():
+        for attr_name, ns in self.valid_attrs.items():
             value = getattr(self, attr_name, None)
             if value:
                 textElement(root, attr_name, ns, value)
@@ -731,7 +731,7 @@ class VideoItem(Item):
         for child in elt.getchildren():
             tag = child.tag
             val = child.text
-            if tag in self.valid_attrs.keys():
+            if tag in list(self.valid_attrs.keys()):
                 setattr(self, tag, val)
 
 
@@ -946,7 +946,7 @@ def element_to_didl(item):
     """ a helper method to create a DIDLElement out of one ET element
         or XML fragment string
     """
-    if not isinstance(item, basestring):
+    if not isinstance(item, str):
         item = ET.tostring(item)
     didl = """<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
                          xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -999,4 +999,4 @@ if __name__ == '__main__':
     res.append(Resource('7', 'http-get:*:*:*'))
 
     for r in res:
-        print r.data, r.protocolInfo
+        print(r.data, r.protocolInfo)

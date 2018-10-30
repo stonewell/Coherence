@@ -19,7 +19,7 @@ from coherence.upnp.core.DIDLLite import classChooser, Resource, DIDLElement
 from coherence import log
 from coherence.backend import BackendItem, BackendStore, Container, LazyContainer, AbstractBackendStore
 #from coherence.backends.iradio_storage import PlaylistStreamProxy
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 from coherence.extern.et import parse_xml
 
 DEFAULT_NAME = 'Radiotime'
@@ -174,7 +174,7 @@ class RadiotimeStore(AbstractBackendStore):
         def got_xml_error(error):
             self.warning("Data received from Radiotime service is invalid: %s", url)
             #self.debug("%r", error.getTraceback())
-            print error.getTraceback()
+            print(error.getTraceback())
             parent.childrenRetrievingNeeded = True  # we retry
             return Failure("Unable to retrieve items for url %s" % url)
 

@@ -37,7 +37,8 @@ class MSearch(DatagramProtocol, log.Loggable):
         if self._port:
             self._port.stopListening()
 
-    def datagramReceived(self, data, (host, port)):
+    def datagramReceived(self, data, xxx_todo_changeme):
+        (host, port) = xxx_todo_changeme
         cmd, headers, content = utils.parse_http_response(data)
         del content # we do not need the content
         self.info('datagramReceived from %s:%d, protocol %s code %s', host, port, cmd[0], cmd[1])
@@ -68,5 +69,5 @@ class MSearch(DatagramProtocol, log.Loggable):
 
         try:
             self.transport.write(req, (SSDP_ADDR, SSDP_PORT))
-        except socket.error, msg:
+        except socket.error as msg:
             self.info("failure sending out the discovery message: %r", msg)

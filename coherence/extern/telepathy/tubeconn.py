@@ -65,7 +65,7 @@ class TubeConnection(Connection, log.Loggable):
 
     def close(self):
         self._dbus_names_changed_match.remove()
-        self._on_dbus_names_changed({}, self.participants.keys())
+        self._on_dbus_names_changed({}, list(self.participants.keys()))
         super(TubeConnection, self).close()
 
     def _on_get_dbus_names_reply(self, names):
@@ -75,7 +75,7 @@ class TubeConnection(Connection, log.Loggable):
         self.warning('Get DBusNames property failed: %s', e)
 
     def _on_dbus_names_changed(self, added, removed):
-        for handle, bus_name in added.items():
+        for handle, bus_name in list(added.items()):
             if handle == self.self_handle:
                 # I've just joined - set my unique name
                 self.set_unique_name(bus_name)
@@ -96,5 +96,5 @@ class TubeConnection(Connection, log.Loggable):
         if self.participants:
             # GetDBusNames already returned: fake a participant add event
             # immediately
-            added = list(self.participants.iteritems())
+            added = list(self.participants.items())
             callback(added, [])
